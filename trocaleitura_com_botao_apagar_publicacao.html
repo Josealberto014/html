@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<link rel="icon" type="image/png" href="a_clean_modern_flat_vector_style_logo_illustrati.png ">
+<meta name="google-site-verification" content="JyiTrOwS323yGhDmwbtW0JZo_wxYm_7aYISVx6a2gnk" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f4e9">
+<meta name="description" content="TrocaLeitura — publique, descubra e leia histórias.">
+<title>TrocaLeitura | Livros que conectam</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{font-family:'DM Sans',sans-serif;color:#18372e;background:#f7f4e9}
+h1,h2,h3,.brand{font-family:'Manrope',sans-serif}
+body{margin:0;background:#f7f4e9;color:#18372e}
+.card{background:#fffdf7;border:1px solid #e5e5d6;border-radius:18px}
+.btn{border-radius:12px;padding:.7rem 1rem;font-weight:700;transition:.15s}
+.btn-primary{background:#147d59;color:white}.btn-primary:hover{background:#0e6447}
+.btn-light{background:#e8f2e9;color:#155c43}.btn-outline{border:1px solid #b9cbbb;color:#155c43}
+.field{width:100%;padding:.75rem .85rem;border:1px solid #cdd8cb;border-radius:10px;background:#fffefa;color:#18372e;outline:none}
+.field:focus{border-color:#16805b;box-shadow:0 0 0 3px #16805b20}
+.muted{color:#61766b}
+.book-cover{background:linear-gradient(145deg,#dcebd8,#f1e8ce);display:grid;place-items:center;min-height:135px;border-radius:12px;color:#176146}
+#readerOverlay{position:fixed;inset:0;z-index:60;background:#f7f4e9;overflow:auto}
+#readerOverlay.reader-dark{background:#15211d;color:#edf4ee}
+#readerOverlay.reader-dark .reader-content{background:#1d2c26;color:#edf4ee;border-color:#34483e}
+#readerOverlay.reader-dark .muted{color:#b5c5bb}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100;display:none;max-width:90%;padding:12px 18px;background:#18372e;color:white;border-radius:12px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header class="sticky top-0 z-40 border-b border-emerald-900/10 bg-[#f7f4e9]/95 backdrop-blur">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+    <a href="#" class="brand flex items-center gap-2 text-xl font-extrabold text-emerald-800"><span class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100">📖</span>TrocaLeitura</a>
+    <div class="hidden items-center gap-5 md:flex">
+      <a href="#inicio" class="font-semibold hover:text-emerald-700">Início</a>
+      <a href="#livros" class="font-semibold hover:text-emerald-700">Explorar livros</a>
+      <a href="#biblioteca" class="font-semibold hover:text-emerald-700">Minha biblioteca</a>
+    </div>
+    <div class="flex gap-2">
+      <button id="navLogin" class="btn btn-outline text-sm">Entrar</button>
+      <button id="navSignup" class="btn btn-primary text-sm">Criar conta</button>
+      <button id="navLogout" class="btn btn-light hidden text-sm">Sair</button>
+    </div>
+  </nav>
+</header>
+
+<main class="mx-auto max-w-6xl px-4">
+<section id="inicio" class="grid items-center gap-8 py-14 md:grid-cols-2 md:py-20">
+  <div>
+    <p class="mb-4 inline-flex rounded-full bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-800">Leia • Compartilhe • Descubra</p>
+    <h1 class="text-4xl font-extrabold leading-tight md:text-6xl">Mais do que livros, <span class="text-emerald-700">conectamos leitores.</span></h1>
+    <p class="mt-5 max-w-xl text-lg leading-8 muted">Descubra histórias, publique seus próprios textos e organize sua biblioteca de leitura em um só lugar.</p>
+    <div class="mt-7 flex flex-wrap gap-3">
+      <a href="#livros" class="btn btn-primary">Explorar livros</a>
+      <button id="heroPublish" class="btn btn-light">Publicar um livro</button>
+    </div>
+    <p class="mt-5 text-sm muted">Publique somente textos de sua autoria, em domínio público ou com autorização dos titulares dos direitos.</p>
+  </div>
+  <div class="card relative overflow-hidden p-6 md:p-10">
+    <div class="absolute -right-8 -top-8 h-36 w-36 rounded-full bg-emerald-100"></div>
+    <div class="relative grid grid-cols-2 gap-4">
+      <div class="rounded-2xl bg-[#e5efdf] p-5"><div class="text-4xl">📚</div><p class="mt-3 font-bold">Descobrir</p><p class="mt-1 text-sm muted">Encontre novas leituras.</p></div>
+      <div class="mt-8 rounded-2xl bg-[#f0e7cf] p-5"><div class="text-4xl">✍️</div><p class="mt-3 font-bold">Publicar</p><p class="mt-1 text-sm muted">Compartilhe sua história.</p></div>
+      <div class="rounded-2xl bg-[#f0e7cf] p-5"><div class="text-4xl">🔖</div><p class="mt-3 font-bold">Salvar</p><p class="mt-1 text-sm muted">Guarde para depois.</p></div>
+      <div class="mt-8 rounded-2xl bg-[#e5efdf] p-5"><div class="text-4xl">📖</div><p class="mt-3 font-bold">Ler</p><p class="mt-1 text-sm muted">Acompanhe sua leitura.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="livros" class="py-10">
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div><p class="font-bold text-emerald-700">ACERVO COMUNITÁRIO</p><h2 class="mt-1 text-3xl font-extrabold">Explorar livros</h2><p class="mt-2 muted">Os livros publicados aparecem aqui para todos os leitores.</p></div>
+    <button id="catalogPublish" class="btn btn-primary">＋ Publicar livro</button>
+  </div>
+  <div class="card mb-6 grid gap-3 p-4 md:grid-cols-[1fr_220px]">
+    <input id="searchBooks" class="field" placeholder="Buscar por título, autor ou palavra-chave…">
+    <select id="genreFilter" class="field"><option value="">Todos os gêneros</option><option>Romance</option><option>Aventura</option><option>Fantasia</option><option>Crônica</option><option>Ficção científica</option><option>Mistério</option><option>Drama</option><option>Poesia</option><option>Conto</option><option>Desenvolvimento pessoal</option><option>Outro</option></select></div>
+  <div id="catalogStatus" class="py-8 text-center muted">Carregando catálogo…</div>
+  <div id="booksGrid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+</section>
+
+<section id="biblioteca" class="py-12">
+  <div class="mb-6"><p class="font-bold text-emerald-700">SEU ESPAÇO</p><h2 class="mt-1 text-3xl font-extrabold">Minha biblioteca</h2><p class="mt-2 muted">Entre na sua conta para consultar seus livros salvos, leituras e publicações.</p></div>
+  <div id="accountPrompt" class="card flex flex-wrap items-center justify-between gap-4 p-6"><p>Você precisa entrar para acessar sua biblioteca.</p><button id="libraryLogin" class="btn btn-primary">Entrar na conta</button></div>
+  <div id="accountPanel" class="hidden">
+    <div class="card mb-5 p-5"><p class="text-sm muted">Conta conectada</p><p id="accountEmail" class="mt-1 font-bold"></p></div>
+    <div class="mb-5 flex flex-wrap gap-2">
+      <button class="btn btn-primary account-tab" data-tab="saved">Livros salvos</button>
+      <button class="btn btn-light account-tab" data-tab="history">Histórico de leitura</button>
+      <button class="btn btn-light account-tab" data-tab="published">Meus livros publicados</button>
+    </div>
+    <div id="libraryStatus" class="py-5 muted"></div>
+    <div id="libraryGrid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+  </div>
+</section>
+
+<footer class="mt-8 border-t border-emerald-900/10 py-8 text-center text-sm muted">TrocaLeitura — livros que conectam leitores. Respeite os direitos autorais.</footer>
+</main>
+
+<div id="authModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/50 p-4">
+  <div class="card w-full max-w-md p-6">
+    <div class="mb-5 flex items-center justify-between"><h2 id="authTitle" class="text-2xl font-extrabold">Entrar</h2><button id="closeAuth" class="rounded-lg px-3 py-1 text-xl" aria-label="Fechar">×</button></div>
+    <form id="authForm" class="space-y-4">
+      <div id="nameWrap" class="hidden"><label class="mb-1 block text-sm font-bold" for="authName">Nome de exibição</label><input id="authName" class="field" maxlength="60" autocomplete="name"></div>
+      <div><label class="mb-1 block text-sm font-bold" for="authEmail">E-mail</label><input id="authEmail" class="field" type="email" required autocomplete="email"></div>
+      <div><label class="mb-1 block text-sm font-bold" for="authPassword">Senha</label><input id="authPassword" class="field" type="password" minlength="6" required autocomplete="current-password"></div>
+      <p id="authHelp" class="text-sm muted">Use seu e-mail e senha para entrar.</p>
+      <button id="authSubmit" class="btn btn-primary w-full" type="submit">Entrar</button>
+    </form>
+    <button id="switchAuth" class="mt-4 text-sm font-bold text-emerald-800 underline">Ainda não tem conta? Criar conta</button>
+  </div>
+</div>
+
+<div id="bookModal" class="fixed inset-0 z-50 hidden items-center justify-center overflow-y-auto bg-slate-950/50 p-4">
+  <div class="card my-auto w-full max-w-2xl p-6">
+    <div class="mb-5 flex items-center justify-between"><h2 class="text-2xl font-extrabold">Publicar um livro</h2><button id="closeBook" class="px-3 py-1 text-xl" aria-label="Fechar">×</button></div>
+    <form id="bookForm" class="space-y-4">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div><label class="mb-1 block text-sm font-bold" for="bookTitle">Título</label><input id="bookTitle" class="field" maxlength="140" required></div>
+        <div><label class="mb-1 block text-sm font-bold" for="bookAuthor">Autor</label><input id="bookAuthor" class="field" maxlength="100" required></div>
+      </div>
+      <div><label class="mb-1 block text-sm font-bold" for="bookGenre">Gênero</label><select id="bookGenre" class="field" required><option value="">Escolha um gênero</option><option>Romance</option><option>Aventura</option><option>Fantasia</option><option>Crônica</option><option>Ficção científica</option><option>Mistério</option><option>Drama</option><option>Poesia</option><option>Conto</option><option>Desenvolvimento pessoal</option><option>Outro</option></select></div>
+      <div><label class="mb-1 block text-sm font-bold" for="bookDescription">Descrição</label><textarea id="bookDescription" class="field" rows="3" maxlength="1200" required></textarea></div>
+      <div><label class="mb-1 block text-sm font-bold" for="bookContent">Texto completo</label><textarea id="bookContent" class="field" rows="9" maxlength="500000" required placeholder="Cole ou escreva aqui o texto do livro…"></textarea></div>
+      <label class="flex items-start gap-3 text-sm"><input id="rightsConfirm" type="checkbox" class="mt-1" required><span>Confirmo que sou autor(a), que o texto está em domínio público ou que tenho autorização para publicá-lo.</span></label>
+      <p class="text-sm muted">Ao publicar, o texto ficará visível para os visitantes do site.</p>
+      <button id="bookSubmit" class="btn btn-primary w-full" type="submit">Publicar no catálogo</button>
+    </form>
+  </div>
+</div>
+
+<div id="readerOverlay" class="hidden">
+  <div class="mx-auto max-w-3xl px-4 py-6 md:py-10">
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-3"><button id="closeReader" class="btn btn-light">← Voltar ao catálogo</button><button id="readerTheme" class="btn btn-outline">Ativar modo escuro</button></div>
+    <p id="readerGenre" class="font-bold text-emerald-700"></p>
+    <h1 id="readerTitle" class="mt-2 text-3xl font-extrabold md:text-5xl"></h1>
+    <p id="readerAuthor" class="mt-3 muted"></p>
+    <div id="readerDescription" class="reader-content card my-6 p-5"></div>
+    <article id="readerText" class="reader-content card whitespace-pre-wrap p-6 text-lg leading-8 md:p-10"></article>
+    <div class="py-8 text-center"><button id="readerSave" class="btn btn-primary">Salvar este livro</button></div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  // Cole aqui os dados públicos do seu projeto Supabase. Nunca use a chave service_role.
+  const SUPABASE_URL = "https://lkolctcbnbirmogjccao.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_bkLSJdR7nNB0nxq_kyDp9A_MGFgLLhB";
+  const configured = SUPABASE_URL.startsWith("https://") &&
+    !SUPABASE_URL.includes("COLE_AQUI") && !SUPABASE_ANON_KEY.includes("COLE_AQUI");
+
+  const $ = (id) => document.getElementById(id);
+  let db = null, currentUser = null, authMode = "login", currentBook = null, activeTab = "saved";
+  let catalogBooks = [], toastTimer;
+
+  // Acervo inicial incluído no próprio site. São recontos de fábulas tradicionais
+  // e textos originais criados para o TrocaLeitura.
+  const seedBooks = [
+    {id:"seed-fabula-cigarra", user_id:null, title:"A Cigarra e a Formiga", author:"Fábula tradicional — reconto", genre:"Conto", description:"Uma fábula sobre planejamento, generosidade e cooperação.", content:`Durante a primavera, uma cigarra passava os dias cantando nas árvores. Perto dali, uma formiga carregava pequenas porções de comida para o formigueiro. A cigarra ria e dizia que a formiga trabalhava demais. A formiga respondia que os dias frios chegariam e seria bom ter alimento guardado.
+
+A cigarra continuou cantando. Quando o verão terminou, o vento ficou gelado e encontrar comida se tornou difícil. A cigarra, que não havia guardado nada, procurou abrigo e bateu à porta do formigueiro.
+
+A formiga a recebeu e dividiu o que tinha, mas explicou que era importante pensar no futuro. Em troca da ajuda, a cigarra ofereceu música para animar os dias frios e ajudou a procurar alimento quando o tempo melhorou.
+
+A cigarra aprendeu que se preparar é importante, e a formiga descobriu que compartilhar talentos também fortalece uma comunidade.
+
+Moral: planejar ajuda a enfrentar tempos difíceis, e a cooperação pode tornar a vida melhor para todos.`},
+    {id:"seed-fabula-leao-rato", user_id:null, title:"O Leão e o Rato", author:"Fábula tradicional — reconto", genre:"Conto", description:"Uma história sobre respeito e ajuda inesperada.", content:`Um leão dormia à sombra de uma árvore quando um ratinho passou correndo por perto e acabou subindo em sua pata. O leão acordou e segurou o pequeno visitante, pronto para expulsá-lo.
+
+O rato pediu desculpas e prometeu que, se fosse poupado, um dia tentaria retribuir a gentileza. O leão achou a promessa engraçada: como um animal tão pequeno poderia ajudar alguém tão forte? Mesmo assim, soltou o ratinho.
+
+Algum tempo depois, o leão ficou preso em uma rede armada por caçadores. Quanto mais se mexia, mais os fios o apertavam. O rato ouviu o rugido, correu até ele e começou a roer as cordas com seus dentes pequenos e firmes.
+
+Logo abriu uma passagem, e o leão conseguiu escapar. Agradeceu ao rato e reconheceu que havia subestimado seu novo amigo.
+
+Moral: ninguém é pequeno demais para fazer algo importante. A força pode aparecer de muitas formas.`},
+    {id:"seed-fabula-raposa-uvas", user_id:null, title:"A Raposa e as Uvas", author:"Fábula tradicional — reconto", genre:"Conto", description:"Uma fábula sobre reconhecer a frustração sem desvalorizar o que desejamos.", content:`Em uma tarde quente, uma raposa caminhava por um jardim quando viu um cacho de uvas maduras pendurado em uma parreira. As frutas pareciam doces e refrescantes.
+
+A raposa se esticou e saltou, mas não alcançou as uvas. Recuou alguns passos e tentou novamente. Saltou mais alto, correu para ganhar impulso e até procurou uma pedra para subir. Ainda assim, o cacho continuou fora de seu alcance.
+
+Cansada, a raposa olhou para as uvas e disse que provavelmente estavam verdes e azedas. Então foi embora, tentando convencer a si mesma de que não queria aquilo afinal.
+
+No caminho, percebeu que estava inventando uma desculpa para não admitir a própria decepção. Não havia problema em não conseguir alcançar as uvas naquele dia. Poderia procurar outro alimento ou voltar quando encontrasse uma maneira melhor.
+
+Moral: é mais honesto reconhecer uma frustração do que fingir que aquilo que desejávamos não tinha valor.`},
+    {id:"seed-fabula-lebre-tartaruga", user_id:null, title:"A Lebre e a Tartaruga", author:"Fábula tradicional — reconto", genre:"Conto", description:"Uma corrida que mostra o valor da constância.", content:`A lebre gostava de se gabar de sua velocidade. Ao ver a tartaruga caminhando devagar, começou a rir. A tartaruga, sem perder a calma, propôs uma corrida até a grande árvore no fim da trilha.
+
+Os animais da floresta marcaram o percurso. A lebre disparou e logo ficou muito à frente. Ao olhar para trás, viu a tartaruga ainda distante. Convencida de que venceria sem esforço, resolveu descansar debaixo de uma árvore.
+
+A sombra era fresca, o vento era suave e a lebre adormeceu. Enquanto isso, a tartaruga continuou andando, passo após passo, sem se distrair. Quando a lebre acordou, correu o mais rápido que pôde, mas viu a tartaruga cruzando a linha de chegada.
+
+A lebre percebeu que velocidade não adiantava muito quando vinha acompanhada de excesso de confiança. A tartaruga venceu porque manteve o ritmo até o fim.
+
+Moral: a constância e a dedicação podem superar a pressa e a arrogância.`},
+    {id:"seed-fabula-corvo-jarra", user_id:null, title:"O Corvo e a Jarra", author:"Fábula tradicional — reconto", genre:"Conto", description:"Uma fábula sobre criatividade para resolver problemas.", content:`Em um dia muito seco, um corvo voou por longas distâncias procurando água. Finalmente encontrou uma jarra no quintal de uma casa. Havia um pouco de água no fundo, mas o bico do corvo não conseguia alcançá-la.
+
+Ele tentou inclinar a jarra, mas ela era pesada. Tentou empurrá-la, porém quase não se moveu. Em vez de desistir, o corvo observou o chão e viu pequenas pedras espalhadas.
+
+Pegou uma pedra com o bico e deixou-a cair dentro da jarra. Depois colocou outra, e mais outra. Aos poucos, as pedras ocuparam espaço e a água subiu. Quando chegou perto da borda, o corvo conseguiu beber.
+
+A solução não exigiu força extraordinária. Exigiu observar o problema, experimentar uma ideia e persistir com paciência.
+
+Moral: a inteligência e a criatividade podem ajudar a superar dificuldades que parecem impossíveis à primeira vista.`},
+
+  ];
+  const seedSavedKey = "trocaleitura_seed_saved_v1";
+  const seedHistoryKey = "trocaleitura_seed_history_v1";
+  function getSeedList(key) {
+    try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch { return []; }
+  }
+  function setSeedList(key, list) { localStorage.setItem(key, JSON.stringify([...new Set(list)])); }
+  function isSeedBook(id) { return String(id).startsWith("seed-"); }
+
+  function toast(message) {
+    const el = $("toast"); el.textContent = message; el.style.display = "block";
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.style.display = "none", 3500);
+  }
+  function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function openModal(id) { $(id).classList.remove("hidden"); $(id).classList.add("flex"); }
+  function closeModal(id) { $(id).classList.add("hidden"); $(id).classList.remove("flex"); }
+  function showAuth(mode) {
+    authMode = mode; $("authTitle").textContent = mode === "signup" ? "Criar conta" : "Entrar";
+    $("authSubmit").textContent = mode === "signup" ? "Criar conta" : "Entrar";
+    $("nameWrap").classList.toggle("hidden", mode !== "signup");
+    $("authName").required = mode === "signup";
+    $("authHelp").textContent = mode === "signup"
+      ? "Use uma senha com pelo menos 6 caracteres. O Supabase pode pedir confirmação por e-mail."
+      : "Entre com o e-mail e a senha da sua conta.";
+    $("switchAuth").textContent = mode === "signup" ? "Já tem conta? Entrar" : "Ainda não tem conta? Criar conta";
+    openModal("authModal");
+  }
+  function needLogin() { if (!currentUser) { showAuth("login"); return false; } return true; }
+  async function ensureProfile(user, displayName) {
+    if (!user) return;
+    const name = displayName || user.user_metadata?.display_name || user.email?.split("@")[0] || "Leitor";
+    const { error } = await db.from("profiles").upsert({id:user.id, display_name:name}, {onConflict:"id"});
+    if (error) console.warn("Perfil:", error.message);
+  }
+  function updateAuthUI() {
+    $("navLogin").classList.toggle("hidden", !!currentUser);
+    $("navSignup").classList.toggle("hidden", !!currentUser);
+    $("navLogout").classList.toggle("hidden", !currentUser);
+    $("accountPrompt").classList.toggle("hidden", !!currentUser);
+    $("accountPanel").classList.toggle("hidden", !currentUser);
+    if (currentUser) $("accountEmail").textContent = currentUser.email || "Conta conectada";
+  }
+  function bookCard(book) {
+    return `<article class="card flex flex-col p-4">
+      <div class="book-cover mb-4"><span class="text-5xl">📖</span></div>
+      <div class="mb-2"><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">${esc(book.genre || "Outro")}</span></div>
+      <h3 class="text-xl font-extrabold">${esc(book.title)}</h3>
+      <p class="mt-1 text-sm muted">por ${esc(book.author)}</p>
+      <p class="mt-3 line-clamp-3 text-sm leading-6">${esc(book.description || "")}</p>
+      <div class="mt-auto flex flex-wrap gap-2 pt-5">
+        <button class="btn btn-primary flex-1" data-read="${esc(book.id)}">Ler livro</button>
+        <button class="btn btn-light" data-save="${esc(book.id)}" aria-label="Salvar livro">♡ Salvar</button>
+        ${currentUser && String(book.user_id) === String(currentUser.id) && !isSeedBook(book.id) ? '<button class="btn w-full border border-red-300 bg-red-50 text-red-700" data-delete-book="' + esc(book.id) + '">Apagar minha publicação</button>' : ""}
+      </div>
+    </article>`;
+  }
+  async function loadCatalog() {
+    // Os textos de exemplo ficam no próprio HTML e aparecem mesmo antes da conexão ao Supabase.
+    if (!db) {
+      catalogBooks = [...seedBooks];
+      renderCatalog();
+      $("catalogStatus").textContent = "Acervo inicial: fábulas tradicionais e histórias originais. Configure o Supabase para habilitar contas e publicações.";
+      return;
+    }
+    $("catalogStatus").textContent = "Carregando catálogo…";
+    const {data,error} = await db.from("books").select("id,user_id,title,author,genre,description,content,created_at").order("created_at",{ascending:false});
+    if (error) {
+      catalogBooks = [...seedBooks];
+      renderCatalog();
+      $("catalogStatus").textContent = "Mostrando o acervo inicial. Não foi possível carregar as publicações do Supabase; verifique a conexão e as políticas RLS.";
+      console.error(error); return;
+    }
+    catalogBooks = [...seedBooks, ...(data || [])];
+    renderCatalog();
+  }
+  function renderCatalog() {
+    const q = $("searchBooks").value.trim().toLocaleLowerCase("pt-BR");
+    const genre = $("genreFilter").value;
+    const filtered = catalogBooks.filter(b => (!genre || b.genre === genre) &&
+      [b.title,b.author,b.description,b.genre].some(v => String(v||"").toLocaleLowerCase("pt-BR").includes(q)));
+    $("booksGrid").innerHTML = filtered.map(bookCard).join("");
+    $("catalogStatus").textContent = filtered.length ? `${filtered.length} livro(s) encontrado(s).` :
+      (catalogBooks.length ? "Nenhum livro corresponde à busca." : "O catálogo ainda está vazio. Entre e publique o primeiro livro.");
+  }
+  async function publishBook(event) {
+    event.preventDefault(); if (!needLogin()) return;
+    const payload = {
+      user_id: currentUser.id, title:$("bookTitle").value.trim(), author:$("bookAuthor").value.trim(),
+      genre:$("bookGenre").value, description:$("bookDescription").value.trim(), content:$("bookContent").value.trim()
+    };
+    if (!payload.content) { toast("Digite o texto completo do livro."); return; }
+    $("bookSubmit").disabled = true; $("bookSubmit").textContent = "Publicando…";
+    const {error} = await db.from("books").insert(payload);
+    $("bookSubmit").disabled = false; $("bookSubmit").textContent = "Publicar no catálogo";
+    if (error) { toast("Erro ao publicar: " + error.message); return; }
+    closeModal("bookModal"); $("bookForm").reset(); toast("Livro publicado no catálogo.");
+    await loadCatalog(); await loadLibrary("published");
+  }
+  async function openReader(id) {
+    const book = catalogBooks.find(b => String(b.id) === String(id));
+    if (!book) { toast("Este livro não foi encontrado."); return; }
+    currentBook = book;
+    $("readerTitle").textContent = book.title; $("readerAuthor").textContent = "por " + book.author;
+    $("readerGenre").textContent = book.genre || "Livro";
+    $("readerDescription").textContent = book.description || "";
+    $("readerText").textContent = book.content || "O autor ainda não adicionou o texto completo.";
+    $("readerOverlay").classList.remove("hidden"); $("readerOverlay").classList.remove("reader-dark");
+    $("readerTheme").textContent = "Ativar modo escuro";
+    if (isSeedBook(book.id)) {
+      const history = getSeedList(seedHistoryKey).filter(id => id !== book.id);
+      history.unshift(book.id); setSeedList(seedHistoryKey, history);
+    } else if (currentUser && db) {
+      const {error} = await db.from("reading_history").upsert(
+        {user_id:currentUser.id, book_id:book.id, last_read_at:new Date().toISOString()},
+        {onConflict:"user_id,book_id"});
+      if (error) console.warn("Histórico:", error.message);
+    }
+  }
+  async function saveBook(id) {
+    if (!needLogin()) return;
+    if (isSeedBook(id)) {
+      const saved = getSeedList(seedSavedKey);
+      if (saved.includes(id)) {
+        setSeedList(seedSavedKey, saved.filter(item => item !== id));
+        toast("Livro removido dos salvos.");
+      } else {
+        saved.push(id); setSeedList(seedSavedKey, saved);
+        toast("Livro salvo na sua biblioteca.");
+      }
+      if (activeTab === "saved") loadLibrary("saved");
+      return;
+    }
+    const {data:existing,error:findError} = await db.from("saved_books").select("book_id").eq("user_id",currentUser.id).eq("book_id",id).maybeSingle();
+    if (findError) { toast("Não foi possível verificar os livros salvos."); return; }
+    if (existing) {
+      const {error} = await db.from("saved_books").delete().eq("user_id",currentUser.id).eq("book_id",id);
+      if (error) { toast("Não foi possível remover o livro salvo."); return; }
+      toast("Livro removido dos salvos.");
+    } else {
+      const {error} = await db.from("saved_books").insert({user_id:currentUser.id,book_id:id});
+      if (error) { toast("Não foi possível salvar o livro: " + error.message); return; }
+      toast("Livro salvo na sua biblioteca.");
+    }
+    if (activeTab === "saved") loadLibrary("saved");
+  }
+  async function deletePublishedBook(id) {
+    if (!needLogin() || !db) return;
+    const book = catalogBooks.find(item => String(item.id) === String(id));
+    if (!book || String(book.user_id) !== String(currentUser.id) || isSeedBook(book.id)) {
+      toast("Você só pode apagar livros publicados pela sua conta.");
+      return;
+    }
+    if (!window.confirm(`Tem certeza de que deseja apagar “${book.title}”? Essa ação não pode ser desfeita.`)) return;
+    const { error } = await db.from("books").delete().eq("id", id).eq("user_id", currentUser.id);
+    if (error) {
+      toast("Não foi possível apagar a publicação: " + error.message);
+      return;
+    }
+    toast("Publicação apagada.");
+    await loadCatalog();
+    if (activeTab === "published") await loadLibrary("published");
+  }
+  async function loadLibrary(tab) {
+    activeTab = tab;
+    document.querySelectorAll(".account-tab").forEach(b => {
+      b.className = "btn account-tab " + (b.dataset.tab === tab ? "btn-primary" : "btn-light");
+    });
+    $("libraryGrid").innerHTML = ""; $("libraryStatus").textContent = "Carregando biblioteca…";
+    if (!currentUser || !db) { $("libraryStatus").textContent = "Entre para consultar sua biblioteca."; return; }
+    if (tab === "published") {
+      const query = await db.from("books").select("id,user_id,title,author,genre,description,content,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false});
+      if (query.error) { $("libraryStatus").textContent = "Erro ao carregar publicações."; return; }
+      const rows = query.data || []; $("libraryStatus").textContent = rows.length ? `${rows.length} livro(s) publicado(s).` : "Você ainda não publicou livros.";
+      $("libraryGrid").innerHTML = rows.map(bookCard).join(""); return;
+    }
+    let ids = [], query;
+    if (tab === "saved") {
+      ids = getSeedList(seedSavedKey);
+      query = await db.from("saved_books").select("book_id").eq("user_id",currentUser.id).order("saved_at",{ascending:false});
+    } else {
+      ids = getSeedList(seedHistoryKey);
+      query = await db.from("reading_history").select("book_id").eq("user_id",currentUser.id).order("last_read_at",{ascending:false});
+    }
+    if (query.error) { $("libraryStatus").textContent = "Erro ao carregar a biblioteca. Verifique as políticas RLS."; return; }
+    ids = [...ids, ...(query.data || []).map(row => row.book_id)];
+    const rows = ids.map(id => catalogBooks.find(b => String(b.id) === String(id))).filter(Boolean);
+    $("libraryStatus").textContent = rows.length ? `${rows.length} livro(s) nesta lista.` : (tab === "saved" ? "Você ainda não salvou livros." : "Seu histórico de leitura está vazio.");
+    $("libraryGrid").innerHTML = rows.map(bookCard).join("");
+  }
+  async function refreshSession() {
+    if (!db) return;
+    const {data:{session}} = await db.auth.getSession();
+    currentUser = session?.user || null; updateAuthUI();
+    if (currentUser) await ensureProfile(currentUser);
+    await loadCatalog();
+    if (currentUser) await loadLibrary(activeTab);
+  }
+
+  $("navLogin").onclick = () => showAuth("login");
+  $("navSignup").onclick = () => showAuth("signup");
+  $("libraryLogin").onclick = () => showAuth("login");
+  $("closeAuth").onclick = () => closeModal("authModal");
+  $("switchAuth").onclick = () => showAuth(authMode === "login" ? "signup" : "login");
+  $("navLogout").onclick = async () => {
+    const {error} = await db.auth.signOut();
+    if (error) { toast("Não foi possível sair: " + error.message); return; }
+    currentUser = null; updateAuthUI(); await loadLibrary(activeTab); toast("Você saiu da conta.");
+  };
+  $("heroPublish").onclick = $("catalogPublish").onclick = () => {
+    if (!needLogin()) return;
+    openModal("bookModal");
+  };
+  $("closeBook").onclick = () => closeModal("bookModal");
+  $("authForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!db) { toast("Configure primeiro o Supabase no código."); return; }
+    const email = $("authEmail").value.trim(), password = $("authPassword").value;
+    $("authSubmit").disabled = true;
+    let result;
+    if (authMode === "signup") {
+      const name = $("authName").value.trim();
+      result = await db.auth.signUp({email,password,options:{data:{display_name:name}}});
+      if (!result.error && result.data.user) {
+        if (result.data.session) await ensureProfile(result.data.user,name);
+        toast(result.data.session ? "Conta criada e conectada." : "Conta criada. Confira seu e-mail para confirmar o cadastro.");
+        closeModal("authModal");
+      }
+    } else {
+      result = await db.auth.signInWithPassword({email,password});
+      if (!result.error) { toast("Login realizado."); closeModal("authModal"); }
+    }
+    $("authSubmit").disabled = false;
+    if (result?.error) { toast("Erro de autenticação: " + result.error.message); return; }
+    await refreshSession();
+  });
+  $("bookForm").addEventListener("submit", publishBook);
+  $("searchBooks").addEventListener("input", renderCatalog);
+  $("genreFilter").addEventListener("change", renderCatalog);
+  document.addEventListener("click", event => {
+    const read = event.target.closest("[data-read]");
+    const save = event.target.closest("[data-save]");
+    const remove = event.target.closest("[data-delete-book]");
+    if (read) openReader(read.dataset.read);
+    if (save) saveBook(save.dataset.save);
+    if (remove) deletePublishedBook(remove.dataset.deleteBook);
+  });
+  document.querySelectorAll(".account-tab").forEach(button => button.addEventListener("click", () => loadLibrary(button.dataset.tab)));
+  $("closeReader").onclick = () => $("readerOverlay").classList.add("hidden");
+  $("readerTheme").onclick = () => {
+    const dark = $("readerOverlay").classList.toggle("reader-dark");
+    $("readerTheme").textContent = dark ? "Ativar modo claro" : "Ativar modo escuro";
+  };
+  $("readerSave").onclick = () => { if (currentBook) saveBook(currentBook.id); };
+  $("readerOverlay").addEventListener("click", event => { if (event.target === $("readerOverlay")) $("readerOverlay").classList.add("hidden"); });
+
+  if (configured && window.supabase?.createClient) {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    db.auth.onAuthStateChange((_event, session) => {
+      currentUser = session?.user || null; updateAuthUI();
+      if (currentUser) setTimeout(() => ensureProfile(currentUser), 0);
+    });
+    refreshSession();
+  } else {
+    // Mesmo sem configurar o Supabase, exibe o acervo incluído no HTML.
+    currentUser = null;
+    updateAuthUI();
+    loadCatalog();
+    $("accountPrompt").classList.remove("hidden");
+  }
+})();
+</script>
+</body>
+</html>
